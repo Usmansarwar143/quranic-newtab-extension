@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Usman's New Tab",
+  "description": "A spiritual and aesthetic custom new tab with time, weather, name, and Quranic verse.",
+  "version": "1.0",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": ["geolocation", "storage"],
+  "host_permissions": [
+    "https://api.openweathermap.org/*",
+    "https://api.alquran.cloud/*"
+  ],
+  "icons": {
+    "128": "icons/icon.png"
+  },
+  "action": {
+    "default_title": "New Tab"
+  }
+} 

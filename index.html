@@ -1,0 +1,228 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
+</head>
+<body>
+    <div class="animated-bg">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <div class="container">
+        <div class="theme-selector">
+            <div class="theme-btn" id="themeBtn">🎨</div>
+            <div class="theme-options" id="themeOptions">
+                <div class="theme-option theme-blue-option" data-theme="blue"></div>
+                <div class="theme-option theme-green-option" data-theme="green"></div>
+                <div class="theme-option theme-orange-option" data-theme="orange"></div>
+                <div class="theme-option theme-purple-option" data-theme="purple"></div>
+                <div class="theme-option theme-red-option" data-theme="red"></div>
+                <div class="theme-option theme-dark-option" data-theme="dark"></div>
+                <div class="theme-option theme-grey-option" data-theme="grey"></div>
+                <div class="theme-option theme-black-option" data-theme="black"></div>
+                <div class="theme-option theme-midnight-option" data-theme="midnight"></div>
+                <div class="theme-option theme-forest-option" data-theme="forest"></div>
+            </div>
+        </div>
+
+        <div class="google-apps-menu">
+            <div class="apps-button" id="appsButton">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM16,6c0,1.1 0.9,2 2,2s2,-0.9 2,-2 -0.9,-2 -2,-2 -2,0.9 -2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z"/>
+            </svg>
+            </div>
+            <div class="apps-grid" id="appsGrid">
+                <a href="https://mail.google.com" class="app-item">
+                    <div class="app-icon">📧</div>
+                    <span class="app-name">Gmail</span>
+                </a>
+                <a href="https://contacts.google.com" class="app-item">
+                    <div class="app-icon">👥</div>
+                    <span class="app-name">Contacts</span>
+                </a>
+                <a href="https://calendar.google.com" class="app-item">
+                    <div class="app-icon">📅</div>
+                    <span class="app-name">Calendar</span>
+                </a>
+                <a href="https://drive.google.com" class="app-item">
+                    <div class="app-icon">📁</div>
+                    <span class="app-name">Drive</span>
+                </a>
+                <a href="https://photos.google.com" class="app-item">
+                    <div class="app-icon">📸</div>
+                    <span class="app-name">Photos</span>
+                </a>
+                <a href="https://maps.google.com" class="app-item">
+                    <div class="app-icon">🗺️</div>
+                    <span class="app-name">Maps</span>
+                </a>
+                <a href="https://translate.google.com" class="app-item">
+                    <div class="app-icon">🌐</div>
+                    <span class="app-name">Translate</span>
+                </a>
+                <a href="https://meet.google.com" class="app-item">
+                    <div class="app-icon">🎥</div>
+                    <span class="app-name">Meet</span>
+                </a>
+                <a href="https://classroom.google.com" class="app-item">
+                    <div class="app-icon">🎓</div>
+                    <span class="app-name">Classroom</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="info-button" id="infoButton">i</div>
+
+        <div class="info-modal" id="infoModal">
+            <div class="info-content">
+                <button class="close-info" id="closeInfo">×</button>
+                <h2>About the Developer</h2>
+                <p>This beautiful Chrome New Tab Extension was developed by <b>Usman Sarwar</b>, a passionate developer who loves creating useful and aesthetically pleasing tools.</p>
+                <p>The extension features a clean, minimalist design with glassmorphism effects, real-time weather data, dynamic Quranic verses, and customizable quick links.</p>
+                <p>All data is stored locally in your browser for privacy, and the extension works offline with fallback features.</p>
+                <p class="prayer-text">"May Allah grant Jannah to my beloved father and shower His mercy upon him. Please remember him in your prayers. 🤲"  ~ Developer</p>
+            </div>
+        </div>
+
+        <div class="center-section">
+            <div class="time-section">
+                <div class="time" id="time">12:00:00</div>
+                <div class="date" id="date">Monday, January 1, 2024</div>
+            </div>
+            <div class="name-section">
+                <div class="user-name" id="userName" contenteditable="true">Usman Sarwar</div>
+                <div class="name-hint">Click to edit your name</div>
+            </div>
+            
+        </div>
+
+        <div class="left-section">
+            <div class="verse-section">
+                <div class="verse-card">
+                    <div class="verse-header">
+                        <span class="verse-icon">📖</span>
+                        <h2 class="verse-title">Daily Quranic Verse</h2>
+                    </div>
+                    <div class="verse-content">
+                        <div class="verse-text" id="verseText">Loading verse...</div>
+                        <div class="verse-translation" id="verseTranslation">Loading translation...</div>
+                        <div class="verse-reference" id="verseReference">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="weather-section">
+                <div class="weather-card">
+                    <div class="weather-icon" id="weatherIcon">🌤️</div>
+                    <div class="weather-info">
+                        <div class="temperature" id="temperature">--°C</div>
+                        <div class="humidity" id="humidity">Humidity: --%</div>
+                        <div class="location" id="location">Loading location...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="search-section">
+                <form id="searchForm" class="search-form">
+                    <div class="search-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search Google...">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <div class="footer-header">
+                <h3>Quick Links</h3>
+                <div class="links-container" id="linksContainer"></div>
+                <button class="edit-btn" id="editLinksBtn">Edit</button>
+            </div>
+            
+            <div class="edit-links-form" id="editLinksForm" style="display: none;">
+                <textarea id="linksTextarea" placeholder="Enter links in format: Name | URL | Icon URL (optional)"></textarea>
+                <div class="edit-buttons">
+                    <button class="save-btn" id="saveLinksBtn">Save</button>
+                    <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Links Modal -->
+        <div class="links-modal" id="linksModal">
+            <div class="links-content">
+                <button class="close-links" id="closeLinks">×</button>
+                <h2 id="greetingText">Assalamualaikum!</h2>
+                <form id="linksForm">
+                    <div class="form-group">
+                        <label for="linkName">Name</label>
+                        <input type="text" id="linkName" placeholder="e.g., GitHub" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="linkUrl">URL</label>
+                        <input type="url" id="linkUrl" placeholder="e.g., https://github.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="linkIcon">Icon (Image URL)</label>
+                        <input type="url" id="linkIcon" placeholder="Optional: Image URL">
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="save-btn">Add Link</button>
+                        <button type="button" class="cancel-btn" id="cancelLinksBtn">Cancel</button>
+                    </div>
+                </form>
+                <div class="links-list" id="linksList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
